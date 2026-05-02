@@ -20,6 +20,7 @@ import { Link } from "wouter";
 import { CodeEditor } from "@/components/editor";
 import { Markdown } from "@/components/markdown";
 import { Terminal } from "@/components/terminal";
+import { FileTree } from "@/components/file-tree";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -173,6 +174,19 @@ export function ChallengePage() {
           <ResizablePanel defaultSize={35} minSize={25} maxSize={50} className="bg-card">
             <ScrollArea className="h-full">
               <div className="p-6 space-y-8">
+                <div>
+                  <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-3">
+                    Project
+                  </h2>
+                  <div className="border border-border rounded-md bg-zinc-900/50 p-3">
+                    <FileTree
+                      files={files.length > 0 ? files : challenge.starterFiles}
+                      activeFile={activeFile}
+                      onSelect={setActiveFile}
+                    />
+                  </div>
+                </div>
+
                 <div>
                   <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">
                     Objectives
