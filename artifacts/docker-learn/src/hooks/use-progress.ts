@@ -71,19 +71,3 @@ export function useProgress() {
   };
 }
 
-/**
- * Given an ordered list of challenge IDs and the set of completed ones,
- * returns a function that determines whether a given challenge is locked.
- *
- * A challenge is unlocked if it's the first one OR the previous one
- * (by `order`) has been completed.
- */
-export function buildLockChecker(orderedIds: string[], completedIds: string[]) {
-  const completedSet = new Set(completedIds);
-  return (id: string): boolean => {
-    const idx = orderedIds.indexOf(id);
-    if (idx <= 0) return false;
-    const prev = orderedIds[idx - 1];
-    return !completedSet.has(prev);
-  };
-}

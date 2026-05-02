@@ -3,7 +3,7 @@ import { Link, useSearch } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Trophy, ArrowRight, List } from "lucide-react";
 import { useListChallenges } from "@workspace/api-client-react";
-import { useProgress, buildLockChecker } from "@/hooks/use-progress";
+import { useProgress } from "@/hooks/use-progress";
 
 export function CompletedPage() {
   const search = useSearch();
@@ -17,13 +17,10 @@ export function CompletedPage() {
     if (!challenges || !completedId) return null;
 
     const sorted = [...challenges].sort((a, b) => a.order - b.order);
-    const orderedIds = sorted.map((c) => c.id);
-    const isLocked = buildLockChecker(orderedIds, completedIds);
-
     const currentIndex = sorted.findIndex((c) => c.id === completedId);
     if (currentIndex === -1 || currentIndex >= sorted.length - 1) return null;
 
-    return sorted.slice(currentIndex + 1).find((c) => !isLocked(c.id) && !completedIds.includes(c.id))
+    return sorted.slice(currentIndex + 1).find((c) => !completedIds.includes(c.id))
       ?? sorted[currentIndex + 1]
       ?? null;
   }, [challenges, completedId, completedIds]);

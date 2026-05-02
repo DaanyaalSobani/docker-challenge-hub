@@ -19,7 +19,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { useProgress, buildLockChecker } from "@/hooks/use-progress";
+import { useProgress } from "@/hooks/use-progress";
 
 const categoryColors: Record<string, string> = {
   dockerfile: "text-blue-400 border-blue-400/30 bg-blue-400/10",
@@ -52,16 +52,6 @@ export function Home() {
   const { data: challenges, isLoading: loadingChallenges } = useListChallenges();
   const { completedIds, totalCompleted, reset, isCompleted } = useProgress();
   const { toast } = useToast();
-
-  const orderedIds = useMemo(() => {
-    if (!challenges) return [];
-    return [...challenges].sort((a, b) => a.order - b.order).map((c) => c.id);
-  }, [challenges]);
-
-  const isLocked = useMemo(
-    () => buildLockChecker(orderedIds, completedIds),
-    [orderedIds, completedIds],
-  );
 
   if (loadingChallenges) {
     return <HomeSkeleton />;
@@ -153,7 +143,7 @@ export function Home() {
                       <ChallengeCard
                         challenge={challenge}
                         completed={isCompleted(challenge.id)}
-                        locked={isLocked(challenge.id)}
+                        locked={false}
                       />
                     </div>
                   ))}

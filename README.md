@@ -7,16 +7,17 @@ An interactive learning platform for Docker, inspired by [learngitbranching.js.o
 DockerQuest is a guided sequence of challenges. Each challenge gives you:
 
 - A real-world scenario (containerize a Node app, set up a multi-stage Go build, wire two services together with Compose, etc.)
-- A working starter project with some files locked (the app code) and one or more Docker files for you to write
+- A working starter project with some files read-only (the app code) and one or more Docker files for you to write
+- A project file tree on the left so you can see how the source is organized
 - A list of objectives, markdown instructions, and progressively-revealed hints
 - An IDE-like editor with file tabs and Docker/YAML syntax highlighting
 - A "Run & Validate" button that submits your files for evaluation and prints the results in a terminal-style output panel
 
-Pass all checks for a challenge and the next one in the sequence unlocks. Challenges are grouped into 6 categories: Dockerfile Basics, Multi-Stage Builds, Docker Compose, Networking, Volumes, and Security.
+All challenges are unlocked from the start — pick any one in any order. Challenges are grouped into 6 categories: Dockerfile Basics, Multi-Stage Builds, Docker Compose, Networking, Volumes, and Security.
 
 ## Pages
 
-- **`/`** — The challenge map. Categories are stacked, each with its own progress badge. Locked challenges are dimmed, completed ones are highlighted, and an overall progress bar sits at the top of the page next to a Reset Progress button.
+- **`/`** — The challenge map. Categories are stacked, each with its own progress badge. Completed challenges are highlighted, and an overall progress bar sits at the top of the page next to a Reset Progress button. Every challenge is openable from the start.
 - **`/challenges/:id`** — The editor. A 3-pane resizable layout with instructions on the left, the code editor with file tabs on the top right, and a terminal-style output console at the bottom right.
 - **`/completed`** — A celebration screen that appears after passing a challenge, with a one-click jump to the next challenge.
 
@@ -34,8 +35,7 @@ That's it. From this single list the app derives everything else:
 
 - Which challenges have a green checkmark on the map
 - The category-level progress badges and the overall progress bar
-- Which challenges are unlocked (a challenge is unlocked when the previous one in the global order is in `completedIds`, or when it's the very first one)
-- Which challenge to suggest next on the completion screen
+- Which challenge to suggest next on the completion screen (the next-by-`order` one you haven't finished yet)
 
 ### Why localStorage and not cookies?
 
@@ -64,8 +64,6 @@ The implementation lives in `artifacts/docker-learn/src/hooks/use-progress.ts` a
 - Reads from `localStorage` on mount
 - Listens for both the cross-tab `storage` event and an in-tab custom event so multiple components stay in sync when one of them marks a challenge complete or resets
 - Exposes `completedIds`, `totalCompleted`, `isCompleted(id)`, `markComplete(id)`, and `reset()`
-
-A separate `buildLockChecker(orderedIds, completedIds)` helper computes the lock state for any challenge from those two pieces.
 
 ## How validation works
 
