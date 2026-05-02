@@ -15,6 +15,4 @@ export interface ChallengeSummary {
   difficulty: ChallengeSummaryDifficulty;
   category: ChallengeSummaryCategory;
   order: number;
-  completed: boolean;
-  locked: boolean;
 }

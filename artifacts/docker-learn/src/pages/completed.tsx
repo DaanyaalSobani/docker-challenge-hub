@@ -1,27 +1,32 @@
-import { Link, useLocation, useSearch } from "wouter";
+import { useMemo } from "react";
+import { Link, useSearch } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Trophy, ArrowRight, List } from "lucide-react";
 import { useListChallenges } from "@workspace/api-client-react";
+import { useProgress, buildLockChecker } from "@/hooks/use-progress";
 
 export function CompletedPage() {
   const search = useSearch();
   const params = new URLSearchParams(search);
   const completedId = params.get("id");
-  
+
   const { data: challenges } = useListChallenges();
-  
-  let nextChallenge = null;
-  
-  if (challenges && completedId) {
-    // Sort challenges by order
+  const { completedIds } = useProgress();
+
+  const nextChallenge = useMemo(() => {
+    if (!challenges || !completedId) return null;
+
     const sorted = [...challenges].sort((a, b) => a.order - b.order);
-    const currentIndex = sorted.findIndex(c => c.id === completedId);
-    
-    if (currentIndex !== -1 && currentIndex < sorted.length - 1) {
-      // Find the next unlocked/not completed challenge
-      nextChallenge = sorted.slice(currentIndex + 1).find(c => !c.locked);
-    }
-  }
+    const orderedIds = sorted.map((c) => c.id);
+    const isLocked = buildLockChecker(orderedIds, completedIds);
+
+    const currentIndex = sorted.findIndex((c) => c.id === completedId);
+    if (currentIndex === -1 || currentIndex >= sorted.length - 1) return null;
+
+    return sorted.slice(currentIndex + 1).find((c) => !isLocked(c.id) && !completedIds.includes(c.id))
+      ?? sorted[currentIndex + 1]
+      ?? null;
+  }, [challenges, completedId, completedIds]);
 
   return (
     <div className="flex flex-col items-center justify-center h-full bg-background p-8">
@@ -32,16 +37,16 @@ export function CompletedPage() {
             <Trophy className="w-12 h-12 text-primary" />
           </div>
         </div>
-        
+
         <div className="space-y-3">
           <h1 className="text-4xl font-bold tracking-tight text-foreground">Challenge Passed!</h1>
           <p className="text-muted-foreground text-lg">
             Your Docker configuration works perfectly. Excellent job.
           </p>
         </div>
-        
+
         <div className="w-full h-[1px] bg-border"></div>
-        
+
         <div className="flex flex-col gap-3 w-full">
           {nextChallenge ? (
             <Link href={`/challenges/${nextChallenge.id}`} className="w-full">
@@ -55,7 +60,7 @@ export function CompletedPage() {
               All Challenges Completed
             </Button>
           )}
-          
+
           <Link href="/" className="w-full">
             <Button variant="outline" size="lg" className="w-full gap-2">
               <List className="w-4 h-4" />

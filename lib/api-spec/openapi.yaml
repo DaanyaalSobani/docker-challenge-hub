@@ -12,8 +12,6 @@ tags:
     description: Health operations
   - name: challenges
     description: Docker challenges
-  - name: progress
-    description: User progress tracking
 paths:
   /healthz:
     get:
@@ -34,7 +32,7 @@ paths:
       operationId: listChallenges
       tags: [challenges]
       summary: List all challenges
-      description: Returns all challenges with metadata and completion status
+      description: Returns all challenges with metadata. Completion/locked state is tracked client-side in localStorage.
       responses:
         "200":
           description: List of challenges
@@ -103,68 +101,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /progress:
-    get:
-      operationId: getProgress
-      tags: [progress]
-      summary: Get user progress
-      description: Returns all completed challenge IDs for the current session
-      responses:
-        "200":
-          description: Progress summary
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ProgressSummary"
-
-  /progress/{challengeId}/complete:
-    post:
-      operationId: markChallengeComplete
-      tags: [progress]
-      summary: Mark a challenge as complete
-      description: Records that the user completed a challenge
-      parameters:
-        - name: challengeId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Progress updated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ProgressSummary"
-
-  /progress/reset:
-    post:
-      operationId: resetProgress
-      tags: [progress]
-      summary: Reset all progress
-      description: Clears all completed challenges for the current session
-      responses:
-        "200":
-          description: Progress reset
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ProgressSummary"
-
-  /challenges/stats:
-    get:
-      operationId: getChallengeStats
-      tags: [challenges]
-      summary: Get challenge completion stats
-      description: Returns aggregate stats on how many challenges are completed vs total
-      responses:
-        "200":
-          description: Challenge stats
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ChallengeStats"
-
 components:
   schemas:
     HealthStatus:
@@ -192,10 +128,6 @@ components:
           enum: [dockerfile, compose, networking, volumes, multi-stage, security]
         order:
           type: integer
-        completed:
-          type: boolean
-        locked:
-          type: boolean
       required:
         - id
         - title
@@ -203,8 +135,6 @@ components:
         - difficulty
         - category
         - order
-        - completed
-        - locked
 
     ChallengeFile:
       type: object
@@ -240,10 +170,6 @@ components:
           enum: [dockerfile, compose, networking, volumes, multi-stage, security]
         order:
           type: integer
-        completed:
-          type: boolean
-        locked:
-          type: boolean
         instructions:
           type: string
         hints:
@@ -265,8 +191,6 @@ components:
         - difficulty
         - category
         - order
-        - completed
-        - locked
         - instructions
         - hints
         - starterFiles
@@ -320,59 +244,6 @@ components:
         - checks
         - feedback
         - output
-
-    ProgressSummary:
-      type: object
-      properties:
-        completedIds:
-          type: array
-          items:
-            type: string
-        totalCompleted:
-          type: integer
-        totalChallenges:
-          type: integer
-      required:
-        - completedIds
-        - totalCompleted
-        - totalChallenges
-
-    ChallengeStats:
-      type: object
-      properties:
-        total:
-          type: integer
-        completed:
-          type: integer
-        byCategory:
-          type: object
-          additionalProperties:
-            type: object
-            properties:
-              total:
-                type: integer
-              completed:
-                type: integer
-            required:
-              - total
-              - completed
-        byDifficulty:
-          type: object
-          additionalProperties:
-            type: object
-            properties:
-              total:
-                type: integer
-              completed:
-                type: integer
-            required:
-              - total
-              - completed
-      required:
-        - total
-        - completed
-        - byCategory
-        - byDifficulty
 
     ErrorResponse:
       type: object

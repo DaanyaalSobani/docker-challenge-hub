@@ -16,8 +16,6 @@ export interface Challenge {
   difficulty: ChallengeDifficulty;
   category: ChallengeCategory;
   order: number;
-  completed: boolean;
-  locked: boolean;
   instructions: string;
   hints: string[];
   starterFiles: ChallengeFile[];

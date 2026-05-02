@@ -37,8 +37,6 @@ export interface ChallengeSummary {
   difficulty: ChallengeSummaryDifficulty;
   category: ChallengeSummaryCategory;
   order: number;
-  completed: boolean;
-  locked: boolean;
 }
 
 export interface ChallengeFile {
@@ -76,8 +74,6 @@ export interface Challenge {
   difficulty: ChallengeDifficulty;
   category: ChallengeCategory;
   order: number;
-  completed: boolean;
-  locked: boolean;
   instructions: string;
   hints: string[];
   starterFiles: ChallengeFile[];
@@ -101,33 +97,6 @@ export interface ValidationResult {
   checks: ValidationCheck[];
   feedback: string;
   output: string;
-}
-
-export interface ProgressSummary {
-  completedIds: string[];
-  totalCompleted: number;
-  totalChallenges: number;
-}
-
-export type ChallengeStatsByCategory = {
-  [key: string]: {
-    total: number;
-    completed: number;
-  };
-};
-
-export type ChallengeStatsByDifficulty = {
-  [key: string]: {
-    total: number;
-    completed: number;
-  };
-};
-
-export interface ChallengeStats {
-  total: number;
-  completed: number;
-  byCategory: ChallengeStatsByCategory;
-  byDifficulty: ChallengeStatsByDifficulty;
 }
 
 export interface ErrorResponse {

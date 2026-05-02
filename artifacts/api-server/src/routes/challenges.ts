@@ -1,35 +1,10 @@
 import { Router } from "express";
-import { db } from "@workspace/db";
-import { userProgressTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
-import { CHALLENGES, getChallengeOrder } from "../data/challenges.js";
+import { CHALLENGES } from "../data/challenges.js";
 
 const router = Router();
 
-function getSessionId(req: any): string {
-  return req.session.id as string;
-}
-
-async function getCompletedIds(sessionId: string): Promise<string[]> {
-  const rows = await db
-    .select({ challengeId: userProgressTable.challengeId })
-    .from(userProgressTable)
-    .where(eq(userProgressTable.sessionId, sessionId));
-  return rows.map((r) => r.challengeId);
-}
-
-function isLocked(challengeId: string, completedIds: string[]): boolean {
-  const order = getChallengeOrder();
-  const idx = order.indexOf(challengeId);
-  if (idx === 0) return false;
-  const prev = order[idx - 1];
-  return !completedIds.includes(prev);
-}
-
 router.get("/", async (req, res) => {
   try {
-    const sessionId = getSessionId(req);
-    const completedIds = await getCompletedIds(sessionId);
     const ordered = CHALLENGES.slice().sort((a, b) => a.order - b.order);
 
     const result = ordered.map((c) => ({
@@ -39,8 +14,6 @@ router.get("/", async (req, res) => {
       difficulty: c.difficulty,
       category: c.category,
       order: c.order,
-      completed: completedIds.includes(c.id),
-      locked: isLocked(c.id, completedIds),
     }));
 
     res.json(result);
@@ -50,53 +23,17 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/stats", async (req, res) => {
-  try {
-    const sessionId = getSessionId(req);
-    const completedIds = await getCompletedIds(sessionId);
-
-    const byCategory: Record<string, { total: number; completed: number }> = {};
-    const byDifficulty: Record<string, { total: number; completed: number }> = {};
-
-    for (const c of CHALLENGES) {
-      if (!byCategory[c.category]) byCategory[c.category] = { total: 0, completed: 0 };
-      byCategory[c.category].total++;
-      if (completedIds.includes(c.id)) byCategory[c.category].completed++;
-
-      if (!byDifficulty[c.difficulty]) byDifficulty[c.difficulty] = { total: 0, completed: 0 };
-      byDifficulty[c.difficulty].total++;
-      if (completedIds.includes(c.id)) byDifficulty[c.difficulty].completed++;
-    }
-
-    res.json({
-      total: CHALLENGES.length,
-      completed: completedIds.length,
-      byCategory,
-      byDifficulty,
-    });
-  } catch (err) {
-    req.log.error({ err }, "Failed to get stats");
-    res.status(500).json({ error: "Failed to get stats" });
-  }
-});
-
 router.get("/:id", async (req, res) => {
   try {
-    const sessionId = getSessionId(req);
-    const completedIds = await getCompletedIds(sessionId);
     const challenge = CHALLENGES.find((c) => c.id === req.params.id);
 
     if (!challenge) {
-      return res.status(404).json({ error: "Challenge not found" });
+      res.status(404).json({ error: "Challenge not found" });
+      return;
     }
 
     const { checks: _checks, ...rest } = challenge;
-
-    res.json({
-      ...rest,
-      completed: completedIds.includes(challenge.id),
-      locked: isLocked(challenge.id, completedIds),
-    });
+    res.json(rest);
   } catch (err) {
     req.log.error({ err }, "Failed to get challenge");
     res.status(500).json({ error: "Failed to get challenge" });
@@ -108,13 +45,15 @@ router.post("/:id/submit", async (req, res) => {
     const challenge = CHALLENGES.find((c) => c.id === req.params.id);
 
     if (!challenge) {
-      return res.status(404).json({ error: "Challenge not found" });
+      res.status(404).json({ error: "Challenge not found" });
+      return;
     }
 
     const { files } = req.body as { files: { name: string; content: string; language: string; readonly: boolean }[] };
 
     if (!Array.isArray(files)) {
-      return res.status(400).json({ error: "files must be an array" });
+      res.status(400).json({ error: "files must be an array" });
+      return;
     }
 
     const checkResults = challenge.checks.map((check) => {

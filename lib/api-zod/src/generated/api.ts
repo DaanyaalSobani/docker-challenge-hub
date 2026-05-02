@@ -16,7 +16,7 @@ export const HealthCheckResponse = zod.object({
 });
 
 /**
- * Returns all challenges with metadata and completion status
+ * Returns all challenges with metadata. Completion/locked state is tracked client-side in localStorage.
  * @summary List all challenges
  */
 export const ListChallengesResponseItem = zod.object({
@@ -33,8 +33,6 @@ export const ListChallengesResponseItem = zod.object({
     "security",
   ]),
   order: zod.number(),
-  completed: zod.boolean(),
-  locked: zod.boolean(),
 });
 export const ListChallengesResponse = zod.array(ListChallengesResponseItem);
 
@@ -60,8 +58,6 @@ export const GetChallengeResponse = zod.object({
     "security",
   ]),
   order: zod.number(),
-  completed: zod.boolean(),
-  locked: zod.boolean(),
   instructions: zod.string(),
   hints: zod.array(zod.string()),
   starterFiles: zod.array(
@@ -107,61 +103,4 @@ export const SubmitChallengeResponse = zod.object({
   ),
   feedback: zod.string(),
   output: zod.string(),
-});
-
-/**
- * Returns all completed challenge IDs for the current session
- * @summary Get user progress
- */
-export const GetProgressResponse = zod.object({
-  completedIds: zod.array(zod.string()),
-  totalCompleted: zod.number(),
-  totalChallenges: zod.number(),
-});
-
-/**
- * Records that the user completed a challenge
- * @summary Mark a challenge as complete
- */
-export const MarkChallengeCompleteParams = zod.object({
-  challengeId: zod.coerce.string(),
-});
-
-export const MarkChallengeCompleteResponse = zod.object({
-  completedIds: zod.array(zod.string()),
-  totalCompleted: zod.number(),
-  totalChallenges: zod.number(),
-});
-
-/**
- * Clears all completed challenges for the current session
- * @summary Reset all progress
- */
-export const ResetProgressResponse = zod.object({
-  completedIds: zod.array(zod.string()),
-  totalCompleted: zod.number(),
-  totalChallenges: zod.number(),
-});
-
-/**
- * Returns aggregate stats on how many challenges are completed vs total
- * @summary Get challenge completion stats
- */
-export const GetChallengeStatsResponse = zod.object({
-  total: zod.number(),
-  completed: zod.number(),
-  byCategory: zod.record(
-    zod.string(),
-    zod.object({
-      total: zod.number(),
-      completed: zod.number(),
-    }),
-  ),
-  byDifficulty: zod.record(
-    zod.string(),
-    zod.object({
-      total: zod.number(),
-      completed: zod.number(),
-    }),
-  ),
 });

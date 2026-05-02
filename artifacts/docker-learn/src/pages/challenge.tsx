@@ -3,14 +3,13 @@ import { useLocation, useParams } from "wouter";
 import {
   useGetChallenge,
   useSubmitChallenge,
-  useMarkChallengeComplete,
   type ChallengeFile,
-  type ValidationResult
+  type ValidationResult,
 } from "@workspace/api-client-react";
-import { 
-  ResizableHandle, 
-  ResizablePanel, 
-  ResizablePanelGroup 
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +27,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { useProgress } from "@/hooks/use-progress";
 
 export function ChallengePage() {
   const params = useParams();
@@ -35,12 +35,10 @@ export function ChallengePage() {
   const id = params.id as string;
   const { toast } = useToast();
 
-  const { data: challenge, isLoading: isChallengeLoading } = useGetChallenge(id, {
-    query: { enabled: !!id }
-  });
+  const { data: challenge, isLoading: isChallengeLoading } = useGetChallenge(id);
 
   const submitChallenge = useSubmitChallenge();
-  const markComplete = useMarkChallengeComplete();
+  const { isCompleted, markComplete } = useProgress();
 
   const [files, setFiles] = useState<ChallengeFile[]>([]);
   const [activeFile, setActiveFile] = useState<string>("");
@@ -58,7 +56,9 @@ export function ChallengePage() {
 
   const handleFileChange = (content: string | undefined) => {
     if (content === undefined) return;
-    setFiles(prev => prev.map(f => f.name === activeFile ? { ...f, content } : f));
+    setFiles((prev) =>
+      prev.map((f) => (f.name === activeFile ? { ...f, content } : f)),
+    );
   };
 
   const handleReset = () => {
@@ -73,38 +73,37 @@ export function ChallengePage() {
   };
 
   const handleRun = () => {
-    submitChallenge.mutate({ id, data: { files } }, {
-      onSuccess: (result) => {
-        setValidationResult(result);
-        if (result.passed) {
-          markComplete.mutate({ challengeId: id }, {
-            onSuccess: () => {
-              toast({
-                title: "Challenge Completed!",
-                description: "All checks passed successfully.",
-                variant: "default",
-              });
-              setTimeout(() => {
-                setLocation(`/completed?id=${id}`);
-              }, 1500);
-            }
-          });
-        } else {
+    submitChallenge.mutate(
+      { id, data: { files } },
+      {
+        onSuccess: (result) => {
+          setValidationResult(result);
+          if (result.passed) {
+            markComplete(id);
+            toast({
+              title: "Challenge Completed!",
+              description: "All checks passed successfully.",
+            });
+            setTimeout(() => {
+              setLocation(`/completed?id=${id}`);
+            }, 1500);
+          } else {
+            toast({
+              title: "Validation Failed",
+              description: "Some checks did not pass. Check the output for details.",
+              variant: "destructive",
+            });
+          }
+        },
+        onError: (err) => {
           toast({
-            title: "Validation Failed",
-            description: "Some checks did not pass. Check the output for details.",
+            title: "Error",
+            description: err.data?.error || err.message || "Failed to validate challenge.",
             variant: "destructive",
           });
-        }
+        },
       },
-      onError: (err) => {
-        toast({
-          title: "Error",
-          description: err.error || "Failed to validate challenge.",
-          variant: "destructive",
-        });
-      }
-    });
+    );
   };
 
   if (isChallengeLoading) {
@@ -115,33 +114,48 @@ export function ChallengePage() {
     return <div className="p-8 text-center text-muted-foreground">Challenge not found</div>;
   }
 
-  const currentFile = files.find(f => f.name === activeFile);
+  const completed = isCompleted(challenge.id);
+  const currentFile = files.find((f) => f.name === activeFile);
 
   return (
     <div className="flex flex-col h-full bg-background overflow-hidden">
       {/* Header / Action Bar */}
       <header className="h-14 border-b border-border flex items-center justify-between px-4 shrink-0 bg-card">
         <div className="flex items-center gap-4">
-          <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 text-sm font-medium">
+          <Link
+            href="/"
+            className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 text-sm font-medium"
+          >
             <ArrowLeft className="w-4 h-4" />
             Back to Map
           </Link>
           <div className="h-4 w-[1px] bg-border mx-2"></div>
           <h1 className="font-semibold text-foreground flex items-center gap-3">
             {challenge.title}
-            {challenge.completed && <CheckCircle2 className="w-4 h-4 text-primary" />}
+            {completed && <CheckCircle2 className="w-4 h-4 text-primary" />}
           </h1>
           <Badge variant="outline" className="font-mono text-xs uppercase">
             {challenge.difficulty}
           </Badge>
         </div>
-        
+
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" onClick={handleReset} className="h-8 gap-1.5" disabled={submitChallenge.isPending}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleReset}
+            className="h-8 gap-1.5"
+            disabled={submitChallenge.isPending}
+          >
             <RotateCcw className="w-3.5 h-3.5" />
             Reset
           </Button>
-          <Button size="sm" onClick={handleRun} disabled={submitChallenge.isPending} className="h-8 gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90">
+          <Button
+            size="sm"
+            onClick={handleRun}
+            disabled={submitChallenge.isPending}
+            className="h-8 gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90"
+          >
             {submitChallenge.isPending ? (
               <div className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
             ) : (
@@ -160,7 +174,9 @@ export function ChallengePage() {
             <ScrollArea className="h-full">
               <div className="p-6 space-y-8">
                 <div>
-                  <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Objectives</h2>
+                  <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">
+                    Objectives
+                  </h2>
                   <ul className="space-y-3">
                     {challenge.objectives.map((obj, i) => (
                       <li key={i} className="flex items-start gap-3 text-sm">
@@ -176,13 +192,17 @@ export function ChallengePage() {
                 <div className="h-[1px] w-full bg-border"></div>
 
                 <div>
-                  <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Instructions</h2>
+                  <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">
+                    Instructions
+                  </h2>
                   <Markdown content={challenge.instructions} />
                 </div>
 
                 {challenge.hints && challenge.hints.length > 0 && (
                   <div className="pt-4">
-                    <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Hints</h2>
+                    <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">
+                      Hints
+                    </h2>
                     <div className="space-y-3">
                       {challenge.hints.map((hint, i) => (
                         <Collapsible key={i} className="border border-border rounded-md bg-zinc-900/50">
@@ -204,9 +224,9 @@ export function ChallengePage() {
               </div>
             </ScrollArea>
           </ResizablePanel>
-          
+
           <ResizableHandle className="w-1 bg-border hover:bg-primary/50 transition-colors" />
-          
+
           {/* Right Panel: Editor + Terminal */}
           <ResizablePanel defaultSize={65}>
             <ResizablePanelGroup direction="vertical">
@@ -214,11 +234,15 @@ export function ChallengePage() {
               <ResizablePanel defaultSize={70} minSize={30}>
                 <div className="h-full flex flex-col bg-[#1e1e1e]">
                   {files.length > 1 && (
-                    <Tabs value={activeFile} onValueChange={setActiveFile} className="w-full shrink-0 rounded-none border-b border-zinc-800">
+                    <Tabs
+                      value={activeFile}
+                      onValueChange={setActiveFile}
+                      className="w-full shrink-0 rounded-none border-b border-zinc-800"
+                    >
                       <TabsList className="h-10 w-full justify-start rounded-none bg-[#1e1e1e] p-0">
-                        {files.map(f => (
-                          <TabsTrigger 
-                            key={f.name} 
+                        {files.map((f) => (
+                          <TabsTrigger
+                            key={f.name}
                             value={f.name}
                             className="h-10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-zinc-900 data-[state=active]:text-primary px-4 font-mono text-xs text-zinc-400 hover:text-zinc-200"
                           >
@@ -230,7 +254,7 @@ export function ChallengePage() {
                   )}
                   <div className="flex-1 min-h-0 relative">
                     {currentFile && (
-                      <CodeEditor 
+                      <CodeEditor
                         value={currentFile.content}
                         onChange={handleFileChange}
                         language={currentFile.language}
@@ -240,9 +264,9 @@ export function ChallengePage() {
                   </div>
                 </div>
               </ResizablePanel>
-              
+
               <ResizableHandle className="h-1 bg-zinc-800 hover:bg-primary/50 transition-colors" />
-              
+
               {/* Bottom: Terminal Output */}
               <ResizablePanel defaultSize={30} minSize={15}>
                 <Terminal result={validationResult} isRunning={submitChallenge.isPending} />
