@@ -8,6 +8,7 @@ import { Layout } from "@/components/layout";
 import { Home } from "@/pages/home";
 import { ChallengePage } from "@/pages/challenge";
 import { CompletedPage } from "@/pages/completed";
+import { ProgressProvider } from "@/hooks/use-progress";
 
 const queryClient = new QueryClient();
 
@@ -33,10 +34,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <Router />
-        </WouterRouter>
-        <Toaster />
+        <ProgressProvider>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+            <Router />
+          </WouterRouter>
+          <Toaster />
+        </ProgressProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
