@@ -11,6 +11,11 @@ export type ValidationCheck = {
   message: string;
 };
 
+export type KeyLearning = {
+  title: string;
+  body: string;
+};
+
 export type ChallengeData = {
   id: string;
   title: string;
@@ -22,6 +27,7 @@ export type ChallengeData = {
   hints: string[];
   starterFiles: ChallengeFile[];
   objectives: string[];
+  keyLearnings: KeyLearning[];
   checks: ValidationCheck[];
 };
 
@@ -637,16 +643,16 @@ Disabling CGO produces a fully static binary that doesn't need C libraries — e
         content: `package main
 
 import (
-	"fmt"
-	"net/http"
+        "fmt"
+        "net/http"
 )
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Go binary running in Docker!")
-	})
-	fmt.Println("Server starting on :8080")
-	http.ListenAndServe(":8080", nil)
+        http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+                fmt.Fprintln(w, "Go binary running in Docker!")
+        })
+        fmt.Println("Server starting on :8080")
+        http.ListenAndServe(":8080", nil)
 }
 `,
         language: "go",

@@ -184,6 +184,10 @@ components:
           type: array
           items:
             type: string
+        keyLearnings:
+          type: array
+          items:
+            $ref: "#/components/schemas/KeyLearning"
       required:
         - id
         - title
@@ -195,6 +199,18 @@ components:
         - hints
         - starterFiles
         - objectives
+        - keyLearnings
+
+    KeyLearning:
+      type: object
+      properties:
+        title:
+          type: string
+        body:
+          type: string
+      required:
+        - title
+        - body
 
     ChallengeSubmission:
       type: object
