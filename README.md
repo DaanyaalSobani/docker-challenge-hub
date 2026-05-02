@@ -2,6 +2,10 @@
 
 An interactive learning platform for Docker, inspired by [learngitbranching.js.org](https://learngitbranching.js.org/). Learn by writing real Docker and Docker Compose configurations and getting instant, specific feedback on what's right and what's missing.
 
+## Documentation
+
+Deeper documentation lives in the [`docs/`](./docs) folder. Start with [`docs/project-structure.md`](./docs/project-structure.md) for a guided tour of the codebase — what each package does and how the pieces fit together. New docs about the project belong in `docs/` too.
+
 ## How it works
 
 DockerQuest is a guided sequence of challenges. Each challenge gives you:
