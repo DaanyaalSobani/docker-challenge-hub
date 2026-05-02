@@ -3,13 +3,17 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Docker Learning Platform API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: challenges
+    description: Docker challenges
+  - name: progress
+    description: User progress tracking
 paths:
   /healthz:
     get:
@@ -24,6 +28,143 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /challenges:
+    get:
+      operationId: listChallenges
+      tags: [challenges]
+      summary: List all challenges
+      description: Returns all challenges with metadata and completion status
+      responses:
+        "200":
+          description: List of challenges
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChallengeSummary"
+
+  /challenges/{id}:
+    get:
+      operationId: getChallenge
+      tags: [challenges]
+      summary: Get challenge details
+      description: Returns full challenge details including starter files and instructions
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Challenge details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Challenge"
+        "404":
+          description: Challenge not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /challenges/{id}/submit:
+    post:
+      operationId: submitChallenge
+      tags: [challenges]
+      summary: Submit a challenge solution
+      description: Validates submitted Docker files and returns detailed feedback
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChallengeSubmission"
+      responses:
+        "200":
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationResult"
+        "404":
+          description: Challenge not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /progress:
+    get:
+      operationId: getProgress
+      tags: [progress]
+      summary: Get user progress
+      description: Returns all completed challenge IDs for the current session
+      responses:
+        "200":
+          description: Progress summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProgressSummary"
+
+  /progress/{challengeId}/complete:
+    post:
+      operationId: markChallengeComplete
+      tags: [progress]
+      summary: Mark a challenge as complete
+      description: Records that the user completed a challenge
+      parameters:
+        - name: challengeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Progress updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProgressSummary"
+
+  /progress/reset:
+    post:
+      operationId: resetProgress
+      tags: [progress]
+      summary: Reset all progress
+      description: Clears all completed challenges for the current session
+      responses:
+        "200":
+          description: Progress reset
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProgressSummary"
+
+  /challenges/stats:
+    get:
+      operationId: getChallengeStats
+      tags: [challenges]
+      summary: Get challenge completion stats
+      description: Returns aggregate stats on how many challenges are completed vs total
+      responses:
+        "200":
+          description: Challenge stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChallengeStats"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +175,209 @@ components:
       required:
         - status
 
+    ChallengeSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        difficulty:
+          type: string
+          enum: [beginner, intermediate, advanced]
+        category:
+          type: string
+          enum: [dockerfile, compose, networking, volumes, multi-stage, security]
+        order:
+          type: integer
+        completed:
+          type: boolean
+        locked:
+          type: boolean
+      required:
+        - id
+        - title
+        - description
+        - difficulty
+        - category
+        - order
+        - completed
+        - locked
+
+    ChallengeFile:
+      type: object
+      properties:
+        name:
+          type: string
+        content:
+          type: string
+        language:
+          type: string
+        readonly:
+          type: boolean
+      required:
+        - name
+        - content
+        - language
+        - readonly
+
+    Challenge:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        difficulty:
+          type: string
+          enum: [beginner, intermediate, advanced]
+        category:
+          type: string
+          enum: [dockerfile, compose, networking, volumes, multi-stage, security]
+        order:
+          type: integer
+        completed:
+          type: boolean
+        locked:
+          type: boolean
+        instructions:
+          type: string
+        hints:
+          type: array
+          items:
+            type: string
+        starterFiles:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChallengeFile"
+        objectives:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - title
+        - description
+        - difficulty
+        - category
+        - order
+        - completed
+        - locked
+        - instructions
+        - hints
+        - starterFiles
+        - objectives
+
+    ChallengeSubmission:
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChallengeFile"
+      required:
+        - files
+
+    ValidationCheck:
+      type: object
+      properties:
+        name:
+          type: string
+        passed:
+          type: boolean
+        message:
+          type: string
+      required:
+        - name
+        - passed
+        - message
+
+    ValidationResult:
+      type: object
+      properties:
+        passed:
+          type: boolean
+        score:
+          type: integer
+        maxScore:
+          type: integer
+        checks:
+          type: array
+          items:
+            $ref: "#/components/schemas/ValidationCheck"
+        feedback:
+          type: string
+        output:
+          type: string
+      required:
+        - passed
+        - score
+        - maxScore
+        - checks
+        - feedback
+        - output
+
+    ProgressSummary:
+      type: object
+      properties:
+        completedIds:
+          type: array
+          items:
+            type: string
+        totalCompleted:
+          type: integer
+        totalChallenges:
+          type: integer
+      required:
+        - completedIds
+        - totalCompleted
+        - totalChallenges
+
+    ChallengeStats:
+      type: object
+      properties:
+        total:
+          type: integer
+        completed:
+          type: integer
+        byCategory:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              total:
+                type: integer
+              completed:
+                type: integer
+            required:
+              - total
+              - completed
+        byDifficulty:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              total:
+                type: integer
+              completed:
+                type: integer
+            required:
+              - total
+              - completed
+      required:
+        - total
+        - completed
+        - byCategory
+        - byDifficulty
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error

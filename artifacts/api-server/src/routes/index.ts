@@ -1,8 +1,12 @@
 import { Router, type IRouter } from "express";
 import healthRouter from "./health";
+import challengesRouter from "./challenges";
+import progressRouter from "./progress";
 
 const router: IRouter = Router();
 
 router.use(healthRouter);
+router.use("/challenges", challengesRouter);
+router.use("/progress", progressRouter);
 
 export default router;
