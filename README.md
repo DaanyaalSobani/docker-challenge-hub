@@ -25,17 +25,31 @@ All challenges are unlocked from the start — pick any one in any order. Challe
 
 Progress is stored entirely in your browser's `localStorage` under the key `dockerquest:progress`. There is no login, no account, no server-side session.
 
-The shape of what's stored is intentionally tiny:
+The shape of what's stored is intentionally small:
 
 ```json
-{ "completedIds": ["df-hello", "df-python"] }
+{
+  "completedIds": ["df-hello", "df-python"],
+  "submissions": {
+    "df-hello": [
+      { "name": "Dockerfile", "content": "FROM node:18-alpine\n..." }
+    ]
+  }
+}
 ```
 
-That's it. From this single list the app derives everything else:
+From this state the app derives everything else:
 
 - Which challenges have a green checkmark on the map
 - The category-level progress badges and the overall progress bar
 - Which challenge to suggest next on the completion screen (the next-by-`order` one you haven't finished yet)
+- The starting contents of each file when you re-open a previously-passed challenge (your last passing solution is restored from `submissions[challengeId]`; if there is no saved submission the original starter files are used)
+
+### Submission persistence
+
+When you click **Run & Validate** and all checks pass, the editor's current files are saved into `submissions[challengeId]` (just `name` + `content` per file — no other metadata). The next time you open that challenge, your saved solution loads instead of the starter files, so you can review or iterate on it. Failed attempts are not saved.
+
+If you want a clean slate for a single challenge while keeping your other progress, click the **Reset** button in the challenge header — it restores that challenge's editor to the starter files for the current session. To wipe everything (completed list and all saved submissions), use **Reset Progress** on the homepage.
 
 ### Why localStorage and not cookies?
 
@@ -63,7 +77,7 @@ The implementation lives in `artifacts/docker-learn/src/hooks/use-progress.ts` a
 
 - Reads from `localStorage` on mount
 - Listens for both the cross-tab `storage` event and an in-tab custom event so multiple components stay in sync when one of them marks a challenge complete or resets
-- Exposes `completedIds`, `totalCompleted`, `isCompleted(id)`, `markComplete(id)`, and `reset()`
+- Exposes `completedIds`, `totalCompleted`, `isCompleted(id)`, `markComplete(id)`, `saveSubmission(id, files)`, `getSubmission(id)`, and `reset()`
 
 ## How validation works
 

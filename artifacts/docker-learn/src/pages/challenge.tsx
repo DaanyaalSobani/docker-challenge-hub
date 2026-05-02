@@ -39,21 +39,29 @@ export function ChallengePage() {
   const { data: challenge, isLoading: isChallengeLoading } = useGetChallenge(id);
 
   const submitChallenge = useSubmitChallenge();
-  const { isCompleted, markComplete } = useProgress();
+  const { isCompleted, markComplete, saveSubmission, getSubmission } = useProgress();
 
   const [files, setFiles] = useState<ChallengeFile[]>([]);
   const [activeFile, setActiveFile] = useState<string>("");
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
 
-  // Initialize files when challenge loads
+  // Initialize files when challenge loads. If the user has a saved
+  // submission for this challenge in localStorage, prefer that over the
+  // starter files; otherwise fall back to the starter files.
   useEffect(() => {
     if (challenge && challenge.starterFiles && files.length === 0) {
-      setFiles(JSON.parse(JSON.stringify(challenge.starterFiles)));
-      if (challenge.starterFiles.length > 0) {
-        setActiveFile(challenge.starterFiles[0].name);
+      const saved = getSubmission(id);
+      const savedByName = new Map((saved ?? []).map((f) => [f.name, f.content]));
+      const initial: ChallengeFile[] = challenge.starterFiles.map((f) => ({
+        ...f,
+        content: savedByName.get(f.name) ?? f.content,
+      }));
+      setFiles(initial);
+      if (initial.length > 0) {
+        setActiveFile(initial[0].name);
       }
     }
-  }, [challenge]);
+  }, [challenge, id, getSubmission, files.length]);
 
   const handleFileChange = (content: string | undefined) => {
     if (content === undefined) return;
@@ -80,6 +88,10 @@ export function ChallengePage() {
         onSuccess: (result) => {
           setValidationResult(result);
           if (result.passed) {
+            saveSubmission(
+              id,
+              files.map((f) => ({ name: f.name, content: f.content })),
+            );
             markComplete(id);
             toast({
               title: "Challenge Completed!",
