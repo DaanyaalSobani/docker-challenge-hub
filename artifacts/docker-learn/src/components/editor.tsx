@@ -1,22 +1,24 @@
 import Editor from "@monaco-editor/react";
-import { useTheme } from "next-themes";
 
 interface CodeEditorProps {
   value: string;
   onChange: (value: string | undefined) => void;
   language: string;
   readonly?: boolean;
+  path?: string;
 }
 
-export function CodeEditor({ value, onChange, language, readonly = false }: CodeEditorProps) {
+export function CodeEditor({ value, onChange, language, readonly = false, path }: CodeEditorProps) {
   return (
     <div className="w-full h-full">
       <Editor
         height="100%"
+        path={path}
         language={language}
         value={value}
         onChange={onChange}
         theme="vs-dark"
+        keepCurrentModel={false}
         options={{
           minimap: { enabled: false },
           fontSize: 14,
