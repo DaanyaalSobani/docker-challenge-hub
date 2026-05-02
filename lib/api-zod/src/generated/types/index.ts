@@ -16,5 +16,6 @@ export * from "./challengeSummaryCategory";
 export * from "./challengeSummaryDifficulty";
 export * from "./errorResponse";
 export * from "./healthStatus";
+export * from "./keyLearning";
 export * from "./validationCheck";
 export * from "./validationResult";

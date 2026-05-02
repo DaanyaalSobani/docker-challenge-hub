@@ -1,9 +1,14 @@
 import { useMemo } from "react";
 import { Link, useSearch } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Trophy, ArrowRight, List } from "lucide-react";
-import { useListChallenges } from "@workspace/api-client-react";
+import { Trophy, ArrowRight, List, Lightbulb } from "lucide-react";
+import {
+  getGetChallengeQueryKey,
+  useGetChallenge,
+  useListChallenges,
+} from "@workspace/api-client-react";
 import { useProgress } from "@/hooks/use-progress";
+import { Markdown } from "@/components/markdown";
 
 export function CompletedPage() {
   const search = useSearch();
@@ -11,6 +16,12 @@ export function CompletedPage() {
   const completedId = params.get("id");
 
   const { data: challenges } = useListChallenges();
+  const { data: challenge } = useGetChallenge(completedId ?? "", {
+    query: {
+      queryKey: getGetChallengeQueryKey(completedId ?? ""),
+      enabled: Boolean(completedId),
+    },
+  });
   const { completedIds } = useProgress();
 
   const nextChallenge = useMemo(() => {
@@ -25,26 +36,64 @@ export function CompletedPage() {
       ?? null;
   }, [challenges, completedId, completedIds]);
 
+  const learnings = challenge?.keyLearnings ?? [];
+
   return (
-    <div className="flex flex-col items-center justify-center h-full bg-background p-8">
-      <div className="max-w-md w-full flex flex-col items-center text-center space-y-8 animate-in fade-in zoom-in duration-500">
-        <div className="relative">
-          <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150"></div>
-          <div className="w-24 h-24 bg-card border-2 border-primary shadow-xl shadow-primary/20 rounded-full flex items-center justify-center relative z-10">
-            <Trophy className="w-12 h-12 text-primary" />
+    <div className="h-full overflow-auto bg-background">
+      <div className="max-w-2xl mx-auto p-8 flex flex-col items-center space-y-8 animate-in fade-in duration-500">
+        <div className="flex flex-col items-center text-center space-y-6 pt-4">
+          <div className="relative">
+            <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150"></div>
+            <div className="w-24 h-24 bg-card border-2 border-primary shadow-xl shadow-primary/20 rounded-full flex items-center justify-center relative z-10">
+              <Trophy className="w-12 h-12 text-primary" />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <h1 className="text-4xl font-bold tracking-tight text-foreground">
+              Challenge Passed!
+            </h1>
+            {challenge && (
+              <p className="text-muted-foreground text-lg">
+                You completed <span className="text-foreground font-medium">{challenge.title}</span>.
+              </p>
+            )}
           </div>
         </div>
 
-        <div className="space-y-3">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground">Challenge Passed!</h1>
-          <p className="text-muted-foreground text-lg">
-            Your Docker configuration works perfectly. Excellent job.
-          </p>
-        </div>
+        {learnings.length > 0 && (
+          <div className="w-full border border-primary/40 bg-primary/5 rounded-lg p-6 space-y-4">
+            <div className="flex items-center gap-2 text-primary">
+              <Lightbulb className="w-5 h-5" />
+              <h2 className="text-sm font-bold uppercase tracking-wider">
+                Key Learnings
+              </h2>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Why the approach you just used works — and what the tempting alternative
+              would have cost you.
+            </p>
+            <div className="space-y-3">
+              {learnings.map((learning, i) => (
+                <div
+                  key={i}
+                  className="border border-border/60 bg-card/60 rounded-md p-4 space-y-2"
+                >
+                  <h3 className="text-base font-semibold text-foreground">
+                    {learning.title}
+                  </h3>
+                  <div className="text-sm text-muted-foreground leading-relaxed">
+                    <Markdown content={learning.body} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="w-full h-[1px] bg-border"></div>
 
-        <div className="flex flex-col gap-3 w-full">
+        <div className="flex flex-col gap-3 w-full max-w-md">
           {nextChallenge ? (
             <Link href={`/challenges/${nextChallenge.id}`} className="w-full">
               <Button size="lg" className="w-full font-semibold gap-2">
@@ -53,7 +102,11 @@ export function CompletedPage() {
               </Button>
             </Link>
           ) : (
-            <Button size="lg" className="w-full font-semibold gap-2 bg-success text-success-foreground" disabled>
+            <Button
+              size="lg"
+              className="w-full font-semibold gap-2 bg-success text-success-foreground"
+              disabled
+            >
               All Challenges Completed
             </Button>
           )}

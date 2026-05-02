@@ -67,6 +67,11 @@ export const ChallengeCategory = {
   security: "security",
 } as const;
 
+export interface KeyLearning {
+  title: string;
+  body: string;
+}
+
 export interface Challenge {
   id: string;
   title: string;
@@ -78,6 +83,7 @@ export interface Challenge {
   hints: string[];
   starterFiles: ChallengeFile[];
   objectives: string[];
+  keyLearnings: KeyLearning[];
 }
 
 export interface ChallengeSubmission {

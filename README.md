@@ -12,6 +12,7 @@ DockerQuest is a guided sequence of challenges. Each challenge gives you:
 - A list of objectives, markdown instructions, and progressively-revealed hints
 - An IDE-like editor with file tabs and Docker/YAML syntax highlighting
 - A "Run & Validate" button that submits your files for evaluation and prints the results in a terminal-style output panel
+- A **Key Learnings** panel that appears after you pass — short explanations of *why* the approach you used works (e.g. copying `package.json` first to leverage layer caching) and what the tempting alternative (e.g. `COPY . .` then install) would have cost you. Available both on the celebration screen and in the editor's left panel when revisiting a completed challenge.
 
 All challenges are unlocked from the start — pick any one in any order. Challenges are grouped into 6 categories: Dockerfile Basics, Multi-Stage Builds, Docker Compose, Networking, Volumes, and Security.
 
@@ -19,7 +20,7 @@ All challenges are unlocked from the start — pick any one in any order. Challe
 
 - **`/`** — The challenge map. Categories are stacked, each with its own progress badge. Completed challenges are highlighted, and an overall progress bar sits at the top of the page next to a Reset Progress button. Every challenge is openable from the start.
 - **`/challenges/:id`** — The editor. A 3-pane resizable layout with instructions on the left, the code editor with file tabs on the top right, and a terminal-style output console at the bottom right.
-- **`/completed`** — A celebration screen that appears after passing a challenge, with a one-click jump to the next challenge.
+- **`/completed`** — A celebration screen that appears after passing a challenge, with the challenge's Key Learnings explained and a one-click jump to the next challenge.
 
 ## Progress tracking
 

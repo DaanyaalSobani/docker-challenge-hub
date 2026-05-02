@@ -8,6 +8,7 @@
 import type { ChallengeCategory } from "./challengeCategory";
 import type { ChallengeDifficulty } from "./challengeDifficulty";
 import type { ChallengeFile } from "./challengeFile";
+import type { KeyLearning } from "./keyLearning";
 
 export interface Challenge {
   id: string;
@@ -20,4 +21,5 @@ export interface Challenge {
   hints: string[];
   starterFiles: ChallengeFile[];
   objectives: string[];
+  keyLearnings: KeyLearning[];
 }

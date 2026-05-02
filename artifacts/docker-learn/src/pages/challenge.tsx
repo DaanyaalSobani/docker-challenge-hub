@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Play, RotateCcw, ArrowLeft, CheckCircle2, ChevronRight, HelpCircle } from "lucide-react";
+import { Play, RotateCcw, ArrowLeft, CheckCircle2, ChevronRight, HelpCircle, Lightbulb } from "lucide-react";
 import { Link } from "wouter";
 import { CodeEditor } from "@/components/editor";
 import { Markdown } from "@/components/markdown";
@@ -186,6 +186,36 @@ export function ChallengePage() {
           <ResizablePanel defaultSize={35} minSize={25} maxSize={50} className="bg-card">
             <ScrollArea className="h-full">
               <div className="p-6 space-y-8">
+                {completed && challenge.keyLearnings && challenge.keyLearnings.length > 0 && (
+                  <div className="border border-primary/40 bg-primary/5 rounded-md p-4 space-y-3">
+                    <div className="flex items-center gap-2 text-primary">
+                      <Lightbulb className="w-4 h-4" />
+                      <h2 className="text-sm font-bold uppercase tracking-wider">
+                        Key Learnings
+                      </h2>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Why the approach you just used works — and what the tempting alternative
+                      would have cost you.
+                    </p>
+                    <div className="space-y-3">
+                      {challenge.keyLearnings.map((learning, i) => (
+                        <div
+                          key={i}
+                          className="border border-border/60 bg-card/60 rounded-md p-3 space-y-1.5"
+                        >
+                          <h3 className="text-sm font-semibold text-foreground">
+                            {learning.title}
+                          </h3>
+                          <div className="text-sm text-muted-foreground leading-relaxed">
+                            <Markdown content={learning.body} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div>
                   <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-3">
                     Project

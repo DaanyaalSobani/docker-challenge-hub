@@ -13,7 +13,13 @@ export function Markdown({ content, className }: MarkdownProps) {
         components={{
           code({ node, inline, className, children, ...props }: any) {
             const match = /language-(\w+)/.exec(className || "");
-            return !inline ? (
+            // react-markdown v9+ removed the `inline` prop. Detect inline code
+            // by the absence of a fenced-block language class AND the absence
+            // of newlines in the content. This avoids rendering inline
+            // backticks as full code blocks.
+            const text = Array.isArray(children) ? children.join("") : String(children ?? "");
+            const isInline = inline ?? (!match && !text.includes("\n"));
+            return !isInline ? (
               <div className="relative rounded-md bg-zinc-950 overflow-hidden border border-border/50 my-4">
                 <div className="flex items-center px-4 py-2 bg-zinc-900 border-b border-border/50 text-xs text-muted-foreground font-mono">
                   {match?.[1] || "text"}

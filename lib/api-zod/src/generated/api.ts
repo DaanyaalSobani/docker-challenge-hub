@@ -69,6 +69,12 @@ export const GetChallengeResponse = zod.object({
     }),
   ),
   objectives: zod.array(zod.string()),
+  keyLearnings: zod.array(
+    zod.object({
+      title: zod.string(),
+      body: zod.string(),
+    }),
+  ),
 });
 
 /**
