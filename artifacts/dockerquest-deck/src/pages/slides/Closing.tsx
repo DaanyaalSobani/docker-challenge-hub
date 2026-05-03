@@ -7,18 +7,18 @@ export default function Closing() {
           <div className="w-[1.5vw] h-[1.5vw] border-[0.15vw] border-text rounded-full" />
           <div className="w-[1.5vw] h-[1.5vw] border-[0.15vw] border-text rounded-full" />
           <div className="flex-1" />
-          <div className="text-[1.2vw] tracking-[0.1em] font-mono">[ dockerquest.app ]</div>
+          <div className="text-[1.2vw] tracking-[0.1em] font-mono">[ end of thread ]</div>
         </div>
 
         <div className="flex-1 p-[4vw] flex flex-col items-center justify-center text-center">
-          <div className="text-[1vw] font-mono text-[#888888] mb-[2vh] tracking-[0.1em]">[ end of build notes ]</div>
+          <div className="text-[1vw] font-mono text-[#888888] mb-[2vh] tracking-[0.1em]">[ shipped · published · live ]</div>
 
           <h2 className="text-[5.5vw] font-light leading-[1.1] tracking-[-0.02em] m-0 underline decoration-[#cccccc] decoration-wavy underline-offset-[0.5vw]">
             Try it. Break it.
           </h2>
 
           <p className="text-[1.6vw] text-[#555555] m-0 mt-[3vh] max-w-[55vw] leading-[1.5]">
-            DockerQuest is live. Sign in, sync your progress, and see how far you get before the next bug shows up.
+            From a one-line prompt to a deployed app to this deck — all in one chat.
           </p>
 
           <div className="mt-[6vh] flex gap-[1.5vw] items-center">

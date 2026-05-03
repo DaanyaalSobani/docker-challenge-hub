@@ -7,44 +7,47 @@ export default function BugsWeCaught() {
           <div className="w-[1.5vw] h-[1.5vw] border-[0.15vw] border-text rounded-full" />
           <div className="w-[1.5vw] h-[1.5vw] border-[0.15vw] border-text rounded-full" />
           <div className="flex-1" />
-          <div className="text-[1.2vw] tracking-[0.1em] font-mono">[ dockerquest.app ]</div>
+          <div className="text-[1.2vw] tracking-[0.1em] font-mono">[ message 04 of 5 ]</div>
         </div>
 
         <div className="flex-1 p-[4vw] flex flex-col">
           <h2 className="text-[3.8vw] font-light leading-[1.1] tracking-[-0.02em] m-0 underline decoration-[#cccccc] decoration-wavy underline-offset-[0.5vw]">
-            Bugs the review caught
+            "Now tell the story"
           </h2>
           <p className="text-[1.4vw] text-[#666666] mt-[2vh] max-w-[60vw]">
-            Two real issues turned up after the first pass — both fixed before shipping.
+            The very prompt that produced this deck.
           </p>
 
-          <div className="flex flex-col gap-[2.5vh] flex-1 mt-[4vh]">
-            {/* Bug 1 */}
-            <div className="border-[0.2vw] border-text rounded-[0.5vw] bg-white p-[2vw] flex gap-[2vw] items-start">
-              <div className="text-[2.5vw] font-mono font-medium text-[#888888] leading-none">01</div>
-              <div className="flex-1">
-                <div className="text-[1.8vw] font-medium">CORS too open</div>
-                <div className="text-[1.15vw] text-[#666666] mt-[1vh] leading-[1.5]">
-                  We started with <span className="font-mono text-[1.05vw]">cors(&#123; origin: true, credentials: true &#125;)</span>, which lets any site send authenticated calls to our API. Tightened the allowlist to the deployment's own domains.
+          <div className="flex-1 mt-[5vh] flex flex-col gap-[3vh] justify-center max-w-[68vw] mx-auto w-full">
+            {/* User bubble — the meta moment */}
+            <div className="flex gap-[1.5vw] items-start justify-end">
+              <div className="max-w-[75%] border-[0.2vw] border-text bg-[#f0f0f0] rounded-[0.5vw] px-[2vw] py-[1.8vh] relative">
+                <div className="text-[0.9vw] font-mono text-[#888888] mb-[0.8vh]">you</div>
+                <div className="text-[1.5vw] leading-[1.4]">
+                  Build me a presentation deck about the journey, with the bug highlights, and put it in a folder. Then tell me how to host it.
+                </div>
+                <div className="absolute -top-[1vw] -left-[1vw] w-[1.8vw] h-[1.8vw] border-l-[0.2vw] border-t-[0.2vw] border-black -rotate-12 z-20" />
+              </div>
+              <div className="w-[3vw] h-[3vw] border-[0.2vw] border-text rounded-full bg-white flex items-center justify-center text-[1vw] font-mono shrink-0">
+                you
+              </div>
+            </div>
+
+            {/* Agent reply */}
+            <div className="flex gap-[1.5vw] items-start">
+              <div className="w-[3vw] h-[3vw] border-[0.2vw] border-dashed border-text rounded-full bg-[#fafafa] flex items-center justify-center text-[1vw] font-mono shrink-0">
+                ai
+              </div>
+              <div className="max-w-[78%] border-[0.15vw] border-dashed border-text bg-[#fafafa] rounded-[0.5vw] px-[2vw] py-[1.8vh]">
+                <div className="text-[0.9vw] font-mono text-[#888888] mb-[1vh]">agent</div>
+                <div className="text-[1.4vw] leading-[1.5] text-[#555555]">
+                  Six wireframe-style slides in <span className="font-mono text-[1.2vw]">artifacts/dockerquest-deck</span>. Publish on Replit for a shareable link, or export to PDF / PPTX for offline use.
                 </div>
               </div>
             </div>
 
-            {/* Bug 2 */}
-            <div className="border-[0.2vw] border-text rounded-[0.5vw] bg-[#fafafa] p-[2vw] flex gap-[2vw] items-start">
-              <div className="text-[2.5vw] font-mono font-medium text-[#888888] leading-none">02</div>
-              <div className="flex-1">
-                <div className="text-[1.8vw] font-medium">Silent progress loss on first login</div>
-                <div className="text-[1.15vw] text-[#666666] mt-[1vh] leading-[1.5]">
-                  The migration cleared local progress before checking that the server actually accepted the upload. A failed PUT would have wiped your only copy. Now the local cache is only cleared on a confirmed 2xx.
-                </div>
-              </div>
-            </div>
-
-            {/* Bonus */}
-            <div className="border-[0.15vw] border-dashed border-muted rounded-[0.5vw] bg-white p-[1.5vw] flex gap-[2vw] items-center text-[1.05vw] text-[#666666]">
-              <div className="font-mono text-[#888888]">[ also ]</div>
-              <div>The old <span className="font-mono">user_progress</span> table had a stale shape from an earlier prototype — dropped and rebuilt before the schema push.</div>
+            <div className="text-center text-[1vw] font-mono text-[#888888] mt-[2vh]">
+              [ you are reading slide 5 of that deck right now ]
             </div>
           </div>
         </div>
