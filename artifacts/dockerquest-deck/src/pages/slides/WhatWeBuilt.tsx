@@ -1,3 +1,5 @@
+import firstPromptShot from "@assets/image_1777768736650.png";
+
 export default function WhatWeBuilt() {
   return (
     <div className="w-screen h-screen overflow-hidden relative bg-bg text-text font-body p-[4vw] flex flex-col">
@@ -10,40 +12,32 @@ export default function WhatWeBuilt() {
           <div className="text-[1.2vw] tracking-[0.1em] font-mono">[ message 01 of 5 ]</div>
         </div>
 
-        <div className="flex-1 p-[4vw] flex flex-col">
-          <h2 className="text-[3.8vw] font-light leading-[1.1] tracking-[-0.02em] m-0 underline decoration-[#cccccc] decoration-wavy underline-offset-[0.5vw]">
-            The first message
-          </h2>
-          <p className="text-[1.4vw] text-[#666666] mt-[2vh] max-w-[60vw]">
-            One sentence to start everything.
-          </p>
-
-          <div className="flex-1 mt-[5vh] flex flex-col gap-[3vh] justify-center max-w-[68vw] mx-auto w-full">
-            {/* User bubble */}
-            <div className="flex gap-[1.5vw] items-start justify-end">
-              <div className="max-w-[70%] border-[0.2vw] border-text bg-[#f0f0f0] rounded-[0.5vw] px-[2vw] py-[1.8vh] relative">
-                <div className="text-[0.9vw] font-mono text-[#888888] mb-[0.8vh]">you</div>
-                <div className="text-[1.6vw] leading-[1.4]">
-                  Build me an interactive Docker learning platform. Challenges, an editor, progress tracking.
-                </div>
-              </div>
-              <div className="w-[3vw] h-[3vw] border-[0.2vw] border-text rounded-full bg-white flex items-center justify-center text-[1vw] font-mono shrink-0">
-                you
-              </div>
+        <div className="flex-1 p-[3vw] flex gap-[3vw]">
+          {/* Left: context */}
+          <div className="w-[32vw] flex flex-col justify-center">
+            <div className="text-[1vw] font-mono text-[#888888] mb-[1.5vh] tracking-[0.1em]">[ the very first message ]</div>
+            <h2 className="text-[3.6vw] font-light leading-[1.05] tracking-[-0.02em] m-0 underline decoration-[#cccccc] decoration-wavy underline-offset-[0.5vw]">
+              How it started
+            </h2>
+            <p className="text-[1.4vw] text-[#555555] mt-[3vh] leading-[1.5] border-l-[0.4vw] border-[#e0e0e0] pl-[1.5vw]">
+              One paragraph. One link to <span className="font-mono text-[1.2vw]">learngitbranching.js.org</span> as inspiration. That was the whole brief.
+            </p>
+            <div className="mt-[3vh] text-[1.1vw] text-[#666666] leading-[1.6]">
+              Nine messages and fifty actions later, the "Docker Learning Platform" was open in the preview pane.
             </div>
+          </div>
 
-            {/* Agent reply */}
-            <div className="flex gap-[1.5vw] items-start">
-              <div className="w-[3vw] h-[3vw] border-[0.2vw] border-dashed border-text rounded-full bg-[#fafafa] flex items-center justify-center text-[1vw] font-mono shrink-0">
-                ai
-              </div>
-              <div className="max-w-[70%] border-[0.15vw] border-dashed border-text bg-[#fafafa] rounded-[0.5vw] px-[2vw] py-[1.8vh] relative">
-                <div className="text-[0.9vw] font-mono text-[#888888] mb-[0.8vh]">agent</div>
-                <div className="text-[1.4vw] leading-[1.5] text-[#555555]">
-                  Set up a pnpm monorepo, scaffolded the React frontend, picked an OpenAPI-first Express backend, and stubbed out ten Dockerfile challenges.
-                </div>
-                <div className="absolute -bottom-[1vw] -right-[1vw] w-[1.8vw] h-[1.8vw] border-l-[0.2vw] border-t-[0.2vw] border-black -rotate-12 z-20" />
-              </div>
+          {/* Right: actual screenshot */}
+          <div className="flex-1 border-[0.2vw] border-text rounded-[0.5vw] bg-[#fafafa] p-[1.5vw] flex items-center justify-center relative shadow-[0.4vw_0.4vw_0_#eeeeee]">
+            <img
+              src={firstPromptShot}
+              alt="Original chat prompt requesting an interactive Docker learning platform inspired by learngitbranching.js.org"
+              className="max-w-full max-h-full object-contain border-[0.15vw] border-[#cccccc] rounded-[0.3vw]"
+            />
+            {/* Annotation cursor */}
+            <div className="absolute -top-[1vw] -left-[1vw] w-[2vw] h-[2vw] border-l-[0.2vw] border-t-[0.2vw] border-black -rotate-12 z-20" />
+            <div className="absolute -bottom-[2vh] left-[2vw] text-[0.95vw] font-mono text-[#888888] bg-white px-[0.8vw] py-[0.3vh] border-[0.15vw] border-dashed border-[#888888] rounded-[0.3vw]">
+              actual chat · 4 hours ago
             </div>
           </div>
         </div>
