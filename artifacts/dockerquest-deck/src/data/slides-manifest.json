@@ -1,1 +1,50 @@
-[]
+[
+  {
+    "id": "11111111-1111-4111-8111-111111111111",
+    "position": 1,
+    "filepath": "src/pages/slides/Title.tsx",
+    "title": "DockerQuest",
+    "description": "Title slide — DockerQuest build story.",
+    "speakerNotes": ""
+  },
+  {
+    "id": "22222222-2222-4222-8222-222222222222",
+    "position": 2,
+    "filepath": "src/pages/slides/WhatWeBuilt.tsx",
+    "title": "What we built",
+    "description": "Overview of the product: challenges, editor, progress.",
+    "speakerNotes": ""
+  },
+  {
+    "id": "33333333-3333-4333-8333-333333333333",
+    "position": 3,
+    "filepath": "src/pages/slides/Architecture.tsx",
+    "title": "How it fits together",
+    "description": "Frontend, OpenAPI contract, and backend in one monorepo.",
+    "speakerNotes": ""
+  },
+  {
+    "id": "44444444-4444-4444-8444-444444444444",
+    "position": 4,
+    "filepath": "src/pages/slides/AddingAuth.tsx",
+    "title": "Adding sign-in",
+    "description": "Cross-machine progress sync via session-cookie auth.",
+    "speakerNotes": ""
+  },
+  {
+    "id": "55555555-5555-4555-8555-555555555555",
+    "position": 5,
+    "filepath": "src/pages/slides/BugsWeCaught.tsx",
+    "title": "Bugs the review caught",
+    "description": "CORS scope and silent progress loss on first login.",
+    "speakerNotes": ""
+  },
+  {
+    "id": "66666666-6666-4666-8666-666666666666",
+    "position": 6,
+    "filepath": "src/pages/slides/Closing.tsx",
+    "title": "Try it. Break it.",
+    "description": "Closing CTA.",
+    "speakerNotes": ""
+  }
+]
